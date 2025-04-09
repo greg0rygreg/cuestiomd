@@ -95,6 +95,6 @@ while True:
         exit()
     if mainMenu == 3:
         clear()
-        print("""CuestioMD v1 - made by greg with love and patience in Python 3.12
+        print("""CuestioMD v0.1 - made by greg with love and patience in Python 3.12
 licensed under GPL v3.0 - you're allowed to redistribute as long as you credit me""")
         sep()
