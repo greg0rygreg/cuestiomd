@@ -22,7 +22,8 @@ while True:
 options:
 (1) make a quizz
 (2) open a quizz
-(3) info
+(3) edit a quizz
+(4) info
 (0) quit
 
 (?) >> """)
@@ -107,8 +108,8 @@ you have {len(questions)} question{"" if len(questions) == 1 else "s"}""")
         clear()
         print(random.choice(byeMSGS))
         exit()
-    if mainMenu == 3:
+    if mainMenu == 4:
         clear()
         print("""CuestioMD v0.2 - made by greg with love and patience in Python 3.12
-licensed under GPL v3.0 - you're allowed to redistribute as long as you credit me""")
+licensed under the MIT license - you're allowed to redistribute as long as you credit me""")
         sep()
