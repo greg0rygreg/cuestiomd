@@ -1,5 +1,5 @@
 # the question format is: [["question", "A", "B", "C", "D", "correct option (from A-D)"]]
-import random, json, time
+import random, json, time, base64
 
 def clear():
     print("\x1b[2J\x1b[H",end="") # that's all i needed to do????
@@ -9,7 +9,7 @@ def sep():
 
 def error(text:str, more:str=None):
     if more is not None:
-        print(f"\x1b[1;31merror:\x1b[[0m\x1b[1m {text}\n\x1b[0m{more}")
+        print(f"\x1b[1;31merror:\x1b[0m\x1b[1m {text}\n\x1b[0m{more}")
     else:
         print(f"\x1b[1;31merror:\x1b[0m\x1b[1m {text}\x1b[0m")
 
@@ -21,7 +21,7 @@ def warning(text:str, more:str=None):
 
 clear()
 welcomeMSGS = ["hi Vro, welcome to", "hey, welcome to CuestioMD", "welcome to CuestioMD! also, try DRAWscii!", "...", ":3", "*snoring*", "hi", "welcome to", "hey google, how to spell QeustionMD"]
-byeMSGS = ["study more", "bye!", f"please tell me you got 100{"%"} on the last quizz you played", "we're planning to add an option to encrypt quizzes made with this app to prevent cheating", "bye Vro", "*snoring*", "bye"]
+byeMSGS = ["study more", "bye!", f"please tell me you got 100{"%"} on the last quizz you played", "bye Vro", "*snoring*", "bye"]
 print(random.choice(welcomeMSGS))
 logo = """ ██████╗██╗   ██╗███████╗███████╗████████╗██╗ ██████╗ ███╗   ███╗██████╗ 
 ██╔════╝██║   ██║██╔════╝██╔════╝╚══██╔══╝██║██╔═══██╗████╗ ████║██╔══██╗
@@ -73,7 +73,7 @@ you have {len(questions)} question{"" if len(questions) == 1 else "s"}""")
                     options.append(random.choice("ABCD"))
                 questions.append(options)
                 clear()
-                if cOption not in "ABCD" and len(cOption) > 1:
+                if cOption not in "ABCD" or len(cOption) > 1:
                     #print(f"the answer to the question you just made was incorrectly formatted so we chose option {options[5]} for you : )")
                     error("incorrectly formatted answer", f"{options[5]} was automatically chosen")
                     sep()
@@ -82,7 +82,13 @@ you have {len(questions)} question{"" if len(questions) == 1 else "s"}""")
                 filename = input("save to (no file extension): ")
                 try:
                     with open(f"{filename}.qcmd", "w") as f:
-                        json.dump(questions, f)
+                        stred = json.dumps(questions)
+                        stred = base64.b64encode(bytes(stred, encoding="utf-8"))
+                        stred = stred[::-1]
+                        _temp = []
+                        for char in stred.decode(encoding="utf-8"):
+                            _temp.append(chr(ord(char) << 2))
+                        f.write("".join(_temp))
                     clear()
                     print(f"quizz saved to {filename}.qcmd successfully")
                 except PermissionError:
@@ -98,7 +104,12 @@ you have {len(questions)} question{"" if len(questions) == 1 else "s"}""")
         filename = input("open (no file extension): ")
         try:
             with open(f"{filename}.qcmd", "r") as f:
-                questions = json.load(f)
+                _temp = []
+                for char in f.read():
+                    _temp.append(chr(ord(char) >> 2))
+                stred = "".join(_temp)[::-1]
+                stred = base64.b64decode(bytes(stred, encoding="utf-8"))
+                questions = json.loads(stred.decode(encoding="utf-8"))
             correct = 0
             for i, question in enumerate(questions):
                 clear()
