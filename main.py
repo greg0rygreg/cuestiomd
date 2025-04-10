@@ -21,12 +21,9 @@ def warning(text:str, more:str=None):
 
 clear()
 welcomeMSGS = ["hi Vro, welcome to", "hey, welcome to CuestioMD", "welcome to CuestioMD! also, try DRAWscii!", "...", ":3", "*snoring*", "hi", "welcome to", "hey google, how to spell QeustionMD"]
-byeMSGS = ["study more", "bye!", f"please tell me you got 100{"%"} on the last quizz you played", "bye Vro", "*snoring*", "bye"]
-if sys.version_info[:2] >= (3, 12):
-    print(random.choice(welcomeMSGS))
-else:
-    warning("your Python version is lower than expected", "please upgrade to atleast Python 3.12 (or don't, idk it's your decision)")
-    sep()
+byeMSGS = ["study more", "bye!", "please tell me you got 100% on the last quizz you played", "bye Vro", "*snoring*", "bye"]
+print(random.choice(welcomeMSGS))
+
 logo = """ ██████╗██╗   ██╗███████╗███████╗████████╗██╗ ██████╗ ███╗   ███╗██████╗ 
 ██╔════╝██║   ██║██╔════╝██╔════╝╚══██╔══╝██║██╔═══██╗████╗ ████║██╔══██╗
 ██║     ██║   ██║█████╗  ███████╗   ██║   ██║██║   ██║██╔████╔██║██║  ██║
