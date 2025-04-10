@@ -2,10 +2,22 @@
 import random, json, time
 
 def clear():
-    print("\x1B[2J\x1B[H",end="") # that's all i needed to do????
+    print("\x1b[2J\x1b[H",end="") # that's all i needed to do????
 
 def sep():
     print("-" * 75)
+
+def error(text:str, more:str=None):
+    if more is not None:
+        print(f"\x1b[1;31merror:\x1b[[0m\x1b[1m {text}\n\x1b[0m{more}")
+    else:
+        print(f"\x1b[1;31merror:\x1b[0m\x1b[1m {text}\x1b[0m")
+
+def warning(text:str, more:str=None):
+    if more is not None:
+        print(f"\x1b[1;33mwarning:\x1b[0m\x1b[1m {text}\n\x1b[0m{more}")
+    else:
+        print(f"\x1b[1;33mwarning:\x1b[0m\x1b[1m {text}\x1b[0m")
 
 clear()
 welcomeMSGS = ["hi Vro, welcome to", "hey, welcome to CuestioMD", "welcome to CuestioMD! also, try DRAWscii!", "...", ":3", "*snoring*", "hi", "welcome to", "hey google, how to spell QeustionMD"]
@@ -62,7 +74,8 @@ you have {len(questions)} question{"" if len(questions) == 1 else "s"}""")
                 questions.append(options)
                 clear()
                 if cOption not in "ABCD" and len(cOption) > 1:
-                    print(f"the answer to the question you just made was incorrectly formatted so we chose option {options[5]} for you : )")
+                    #print(f"the answer to the question you just made was incorrectly formatted so we chose option {options[5]} for you : )")
+                    error("incorrectly formatted answer", f"{options[5]} was automatically chosen")
                     sep()
             if actions == 0:
                 clear()
@@ -76,7 +89,8 @@ you have {len(questions)} question{"" if len(questions) == 1 else "s"}""")
                     with open(f"backup_{time.strftime("%d_%m_%Y", time.gmtime())}.qcmd", "w") as f:
                         json.dump(questions, f)
                     clear()
-                    print(f"quizz failed to save to {filename}.qcmd so we've created a backup for you")
+                    #print(f"quizz failed to save to {filename}.qcmd so we've created a backup for you")
+                    error(f"failed to save to {filename}.qcmd", "backup has been created in the current folder")
                 sep()
                 break
     if mainMenu == 2:
@@ -101,7 +115,8 @@ you have {len(questions)} question{"" if len(questions) == 1 else "s"}""")
             sep()
         except FileNotFoundError:
             clear()
-            print("quizz not found")
+            #print("quizz not found")
+            error(f"quizz {filename}.qcmd was not found")
             sep()
         
     if mainMenu == 0:
@@ -115,5 +130,6 @@ licensed under the MIT license - you're allowed to redistribute as long as you c
         sep()
     if mainMenu == 3:
         clear()
-        print("work in progess - come back later!")
+        #print("work in progess - come back later!")
+        warning("work in progress", "come back later!")
         sep()
