@@ -1,5 +1,5 @@
 # the question format is: [["question", "A", "B", "C", "D", "correct option (from A-D)"]]
-import random, json, time, base64, sys
+import random, json, time, base64
 
 def clear():
     print("\x1b[2J\x1b[H",end="") # that's all i needed to do????
@@ -19,11 +19,27 @@ def warning(text:str, more:str=None):
     else:
         print(f"\x1b[1;33mwarning:\x1b[0m\x1b[1m {text}\x1b[0m")
 
+def ILShiftDecode(text:str):
+    _temp = []
+    for char in text:
+        _temp.append(chr(ord(char) >> 2))
+    stred = "".join(_temp)[::-1]
+    stred = base64.b64decode(bytes(stred, encoding="utf-8"))
+    return stred.decode(encoding="utf-8")
+
+def ILShiftEncode(text:str):
+    stred = text
+    stred = base64.b64encode(bytes(stred, encoding="utf-8"))
+    stred = stred[::-1]
+    _temp = []
+    for char in stred.decode(encoding="utf-8"):
+        _temp.append(chr(ord(char) << 2))
+    return "".join(_temp)
+
 clear()
 welcomeMSGS = ["hi Vro, welcome to", "hey, welcome to CuestioMD", "welcome to CuestioMD! also, try DRAWscii!", "...", ":3", "*snoring*", "hi", "welcome to", "hey google, how to spell QeustionMD"]
 byeMSGS = ["study more", "bye!", "please tell me you got 100% on the last quizz you played", "bye Vro", "*snoring*", "bye"]
 print(random.choice(welcomeMSGS))
-
 logo = """ ██████╗██╗   ██╗███████╗███████╗████████╗██╗ ██████╗ ███╗   ███╗██████╗ 
 ██╔════╝██║   ██║██╔════╝██╔════╝╚══██╔══╝██║██╔═══██╗████╗ ████║██╔══██╗
 ██║     ██║   ██║█████╗  ███████╗   ██║   ██║██║   ██║██╔████╔██║██║  ██║
@@ -54,7 +70,7 @@ options:
 ██╔══██║██║        ██║   ██║██║   ██║██║╚██╗██║╚════██║
 ██║  ██║╚██████╗   ██║   ██║╚██████╔╝██║ ╚████║███████║
 ╚═╝  ╚═╝ ╚═════╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝
-you have {len(questions)} question{"" if len(questions) == 1 else "s"}""")
+you have {len(questions)} question{'' if len(questions) == 1 else 's'}""")
             actions = input("(1) add a question\n(0) save and exit\n\n(?) >> ")
             try:
                 actions = int(actions)
@@ -66,7 +82,7 @@ you have {len(questions)} question{"" if len(questions) == 1 else "s"}""")
                 question = input("question: ")
                 options.append(question)
                 for i in range(4):
-                    options.append(input(f"option {"ABCD"[i]}: "))
+                    options.append(input(f"option {'ABCD'[i]}: "))
                 cOption = input("correct option (A-D): ").upper()
                 if cOption in "ABCD" and len(cOption) == 1:
                     options.append(cOption.upper())
@@ -83,18 +99,12 @@ you have {len(questions)} question{"" if len(questions) == 1 else "s"}""")
                 filename = input("save to (no file extension): ")
                 try:
                     with open(f"{filename}.qcmd", "w") as f:
-                        stred = json.dumps(questions)
-                        stred = base64.b64encode(bytes(stred, encoding="utf-8"))
-                        stred = stred[::-1]
-                        _temp = []
-                        for char in stred.decode(encoding="utf-8"):
-                            _temp.append(chr(ord(char) << 2))
-                        f.write("".join(_temp))
+                        f.write(ILShiftEncode(json.dumps(questions)))
                     clear()
                     print(f"quizz saved to {filename}.qcmd successfully")
                 except PermissionError:
-                    with open(f"backup_{time.strftime("%d_%m_%Y", time.gmtime())}.qcmd", "w") as f:
-                        json.dump(questions, f)
+                    with open(f"backup_{time.strftime('%d_%m_%Y', time.gmtime())}.qcmd", "w") as f:
+                        f.write(ILShiftEncode(json.dumps(questions)))
                     clear()
                     #print(f"quizz failed to save to {filename}.qcmd so we've created a backup for you")
                     error(f"failed to save to {filename}.qcmd", "backup has been created in the current folder")
@@ -105,25 +115,20 @@ you have {len(questions)} question{"" if len(questions) == 1 else "s"}""")
         filename = input("open (no file extension): ")
         try:
             with open(f"{filename}.qcmd", "r") as f:
-                _temp = []
-                for char in f.read():
-                    _temp.append(chr(ord(char) >> 2))
-                stred = "".join(_temp)[::-1]
-                stred = base64.b64decode(bytes(stred, encoding="utf-8"))
-                questions = json.loads(stred.decode(encoding="utf-8"))
+                questions = json.loads(ILShiftDecode(f.read()))
             correct = 0
             for i, question in enumerate(questions):
                 clear()
                 msg = f"question {i+1}/{len(questions)}: {question[0]}\n"
                 for i in range(4):
-                    msg += f"({"ABCD"[i]}) {question[i+1]}\n"
+                    msg += f"({'ABCD'[i]}) {question[i+1]}\n"
                 msg += "\n(?) >> "
                 answer = input(msg).upper()
                 if answer == question[5]:
                     correct += 1
             clear()
             grade = round((correct / len(questions)) * 100, 2)
-            print(f"! ! ! RESULTS ARE IN ! ! !\nquestions you got correct: {correct}\nquestions you got wrong: {len(questions) - correct}\nyour final grade is {grade}%\n\n! YOU {"WIN" if grade >= 50 else "LOSE"} !")
+            print(f"! ! ! RESULTS ARE IN ! ! !\nquestions you got correct: {correct}\nquestions you got wrong: {len(questions) - correct}\nyour final grade is {grade}%\n\n! YOU {'WIN' if grade >= 50 else 'LOSE'} !")
             sep()
         except FileNotFoundError:
             clear()
@@ -137,7 +142,7 @@ you have {len(questions)} question{"" if len(questions) == 1 else "s"}""")
         exit()
     if mainMenu == 4:
         clear()
-        print("""CuestioMD v0.2.1 - made by greg with love and patience in Python 3.12
+        print("""CuestioMD v0.2.2 - made by greg with love and patience in Python 3.12
 licensed under the MIT license - you're allowed to redistribute as long as you credit me""")
         sep()
     if mainMenu == 3:
