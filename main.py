@@ -1,5 +1,5 @@
 # the question format is: [["question", "A", "B", "C", "D", "correct option (from A-D)"]]
-import random, json, time, base64
+import random, json, time, base64, sys
 
 def clear():
     print("\x1b[2J\x1b[H",end="") # that's all i needed to do????
@@ -22,7 +22,11 @@ def warning(text:str, more:str=None):
 clear()
 welcomeMSGS = ["hi Vro, welcome to", "hey, welcome to CuestioMD", "welcome to CuestioMD! also, try DRAWscii!", "...", ":3", "*snoring*", "hi", "welcome to", "hey google, how to spell QeustionMD"]
 byeMSGS = ["study more", "bye!", f"please tell me you got 100{"%"} on the last quizz you played", "bye Vro", "*snoring*", "bye"]
-print(random.choice(welcomeMSGS))
+if sys.version_info[:2] >= (3, 12):
+    print(random.choice(welcomeMSGS))
+else:
+    warning("your Python version is lower than expected", "please upgrade to atleast Python 3.12 (or don't, idk it's your decision)")
+    sep()
 logo = """ ██████╗██╗   ██╗███████╗███████╗████████╗██╗ ██████╗ ███╗   ███╗██████╗ 
 ██╔════╝██║   ██║██╔════╝██╔════╝╚══██╔══╝██║██╔═══██╗████╗ ████║██╔══██╗
 ██║     ██║   ██║█████╗  ███████╗   ██║   ██║██║   ██║██╔████╔██║██║  ██║
@@ -136,7 +140,7 @@ you have {len(questions)} question{"" if len(questions) == 1 else "s"}""")
         exit()
     if mainMenu == 4:
         clear()
-        print("""CuestioMD v0.2 - made by greg with love and patience in Python 3.12
+        print("""CuestioMD v0.2.1 - made by greg with love and patience in Python 3.12
 licensed under the MIT license - you're allowed to redistribute as long as you credit me""")
         sep()
     if mainMenu == 3:
