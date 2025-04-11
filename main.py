@@ -1,4 +1,4 @@
-# the question format is: [["question", "A", "B", "C", "D", "correct option (from A-D)"]]
+# the question format is: [["question", "option A", "option B", "option C", "option D", "correct option (from A to D)"]]
 import random, json, time, base64
 
 def clear():
@@ -51,8 +51,7 @@ while True:
 options:
 (1) make a quizz
 (2) open a quizz
-(3) edit a quizz [WIP]
-(4) info
+(3) info
 (0) quit
 
 (?) >> """)
@@ -71,7 +70,7 @@ options:
 ██║  ██║╚██████╗   ██║   ██║╚██████╔╝██║ ╚████║███████║
 ╚═╝  ╚═╝ ╚═════╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝
 you have {len(questions)} question{'' if len(questions) == 1 else 's'}""")
-            actions = input("(1) add a question\n(0) save and exit\n\n(?) >> ")
+            actions = input(f"(1) add a question\n{'(2) edit a question\n' if len(questions) > 0 else ''}(0) save and exit\n\n(?) >> ")
             try:
                 actions = int(actions)
             except ValueError:
@@ -110,6 +109,61 @@ you have {len(questions)} question{'' if len(questions) == 1 else 's'}""")
                     error(f"failed to save to {filename}.qcmd", "backup has been created in the current folder")
                 sep()
                 break
+            if actions == 2 and len(questions) > 0:
+                clear()
+                try:
+                    questionNo = int(input("question no.: "))
+                    clear()
+                except (ValueError, IndexError):
+                    clear()
+                    questionNo = 1
+                    error("invalid question number", "first question has been selected")
+                    sep()
+                questionNo = questionNo-1
+                isIt = input(f"""question: {questions[questionNo][0]}
+(A) {questions[questionNo][1]}
+(B) {questions[questionNo][2]}
+(C) {questions[questionNo][3]}
+(D) {questions[questionNo][4]}
+answer: {questions[questionNo][5]}
+is this it?
+(y/n) >> """).lower()
+                if isIt not in "yn" or len(isIt) > 1:
+                    clear()
+                if isIt == "n":
+                    clear()
+                if isIt == "y":
+                    clear()
+                    try:
+                        toEdit = int(input(f"""question (1): {questions[questionNo][0]}
+(A/2) {questions[questionNo][1]}
+(B/3) {questions[questionNo][2]}
+(C/4) {questions[questionNo][3]}
+(D/5) {questions[questionNo][4]}
+answer (6): {questions[questionNo][5]}
+choose one to edit
+(?) >> """))
+                        if toEdit < 1 or toEdit > 6:
+                            clear()
+                            toEdit = 6
+                            error("invalid choice", "answer was selected")
+                            sep()
+                    except ValueError:
+                        clear()
+                        toEdit = 6
+                        error("invalid choice", "answer was selected")
+                        sep()
+                    edited = input(f"new {'question' if toEdit == 1 else 'option' if str(toEdit) in '2345' else 'answer' if toEdit == 6 else '[unknown]'}: ")
+                    clear()
+                    if toEdit == 6:
+                        edited = edited.upper()
+                        if edited not in "ABCD" or len(cOption) > 1:
+                            edited = random.choice("ABCD")
+                            error("incorrectly formatted answer", f"{edited} was automatically chosen")
+                            sep()
+                    questions[questionNo][toEdit-1] = edited
+            if actions == 2 and len(questions) == 0:
+                clear()
     if mainMenu == 2:
         clear()
         filename = input("open (no file extension): ")
@@ -140,13 +194,8 @@ you have {len(questions)} question{'' if len(questions) == 1 else 's'}""")
         clear()
         print(random.choice(byeMSGS))
         exit()
-    if mainMenu == 4:
-        clear()
-        print("""CuestioMD v0.2.2 - made by greg with love and patience in Python 3.12
-licensed under the MIT license - you're allowed to redistribute as long as you credit me""")
-        sep()
     if mainMenu == 3:
         clear()
-        #print("work in progess - come back later!")
-        warning("work in progress", "come back later!")
+        print("""CuestioMD v0.3 - made by greg with love and patience in Python 3.12
+licensed under the MIT license - you're allowed to redistribute as long as you credit me""")
         sep()
